@@ -29,6 +29,8 @@ dotenv.config();
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+// بعد از const app = express();
+app.set("trust proxy", 1);
 
 // ============================================================
 // 🧱 Middlewares — Security, Speed, and Structure
@@ -125,12 +127,13 @@ app.use(
       mongoUrl: process.env.MONGO_URI,
       collectionName: "sessions",
     }),
-    cookie: {
-      httpOnly: true,
-      maxAge: 1000 * 60 * 60, // 1 ساعت
-      secure: false, // در production روی true بذار با HTTPS
-      sameSite: "lax",
-    },
+cookie: {
+  httpOnly: true,
+  maxAge: 1000 * 60 * 60, // 1h
+  secure: process.env.NODE_ENV === "production", // فقط در production
+  sameSite: "lax",
+},
+
   })
 );
 
@@ -142,7 +145,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Default Route (landing page)
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "register.html"));
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // ============================================================
