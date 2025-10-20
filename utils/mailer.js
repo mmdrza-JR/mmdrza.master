@@ -1,52 +1,25 @@
 // ============================================================
-// 💌 Mmdrza Ultra Mailer v5
-// - Gmail / SMTP Verified
-// - Supports Verification + Booking Emails
+// 💌 Mmdrza Ultra Mailer v6 — Resend API (for Railway)
+// ============================================================
+// - No SMTP, No Timeouts
+// - Works instantly via HTTPS
 // ============================================================
 
-// ============================================================
-// 📧 Mmdrza Mailer — Safe for Railway (Mailtrap compatible)
-// ============================================================
-
-import nodemailer from "nodemailer";
+import fetch from "node-fetch";
 import dotenv from "dotenv";
 dotenv.config();
 
-// ============================================================
-// 🧠 SMTP Connection (Mailtrap)
-// ============================================================
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "sandbox.smtp.mailtrap.io",
-  port: Number(process.env.SMTP_PORT) || 587,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-  secure: false, // ⚠️ همیشه false روی Mailtrap و Railway
-  tls: {
-    rejectUnauthorized: false, // جلوگیری از خطای self-signed cert
-  },
-});
-
-// 🧩 تست اتصال SMTP در شروع
-transporter.verify((err, success) => {
-  if (err) {
-    console.error("❌ SMTP Connection Failed:", err.message);
-  } else {
-    console.log("✅ SMTP Server Ready — Mailer Online!");
-  }
-});
+const RESEND_API_URL = "https://api.resend.com/emails";
 
 // ============================================================
 // ✉️ ارسال ایمیل تأیید ثبت‌نام
 // ============================================================
 export async function sendVerificationEmail(toEmail, code) {
-  const htmlContent = `
+  const html = `
   <div style="font-family:Tahoma,sans-serif;direction:rtl;background:#f1f5f9;padding:20px;text-align:center">
     <div style="background:#fff;border-radius:12px;padding:30px;max-width:520px;margin:auto;box-shadow:0 0 25px rgba(0,0,0,0.08)">
-      <img src="https://cdn-icons-png.flaticon.com/512/542/542689.png" width="80" alt="Mail" style="margin-bottom:20px">
       <h2 style="color:#2563eb;">تأیید ایمیل شما</h2>
-      <p style="font-size:15px;color:#475569;">کد تأیید ورود به حساب شما:</p>
+      <p style="font-size:15px;color:#475569;">کد تأیید ورود شما:</p>
       <h1 style="font-size:36px;letter-spacing:5px;color:#1e3a8a;margin:20px 0;">${code}</h1>
       <p style="font-size:13px;color:#64748b;">این کد تا ۵ دقیقه آینده معتبر است.</p>
       <hr style="margin:25px 0;border:none;border-top:1px solid #e2e8f0;">
@@ -55,14 +28,26 @@ export async function sendVerificationEmail(toEmail, code) {
   </div>`;
 
   try {
-    const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM || `"Mmdrza Advisor" <${process.env.SMTP_USER}>`,
-      to: toEmail,
-      subject: "🔐 کد تأیید ورود شما",
-      html: htmlContent,
+    const res = await fetch(RESEND_API_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "Mmdrza Advisor <onboarding@resend.dev>",
+        to: [toEmail],
+        subject: "🔐 کد تأیید ورود شما",
+        html,
+      }),
     });
 
-    console.log(`✅ Verification email sent to ${toEmail} (MessageID: ${info.messageId})`);
+    if (!res.ok) {
+      const msg = await res.text();
+      throw new Error(`Resend API error: ${msg}`);
+    }
+
+    console.log(`✅ Verification email sent to ${toEmail}`);
     return true;
   } catch (err) {
     console.error("❌ Error sending verification email:", err.message);
@@ -74,7 +59,7 @@ export async function sendVerificationEmail(toEmail, code) {
 // 📘 ارسال ایمیل نهایی رزرو مشاوره
 // ============================================================
 export async function sendBookingEmail(booking, toEmail) {
-  const htmlContent = `
+  const html = `
   <div style="font-family:Tahoma,sans-serif;direction:rtl;background:#f6f8fb;padding:20px">
     <div style="background:#fff;border-radius:10px;padding:20px;max-width:600px;margin:auto;box-shadow:0 0 20px rgba(0,0,0,0.08)">
       <h2 style="color:#2563eb">رزرو جدید مشاوره تحصیلی</h2>
@@ -93,18 +78,29 @@ export async function sendBookingEmail(booking, toEmail) {
   </div>`;
 
   try {
-    const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM || `"Mmdrza Advisor" <${process.env.SMTP_USER}>`,
-      to: toEmail,
-      subject: `📘 رزرو جدید از ${booking.name}`,
-      html: htmlContent,
+    const res = await fetch(RESEND_API_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "Mmdrza Advisor <onboarding@resend.dev>",
+        to: [toEmail],
+        subject: `📘 رزرو جدید از ${booking.name}`,
+        html,
+      }),
     });
 
-    console.log(`✅ Booking email sent to ${toEmail} (${info.messageId})`);
+    if (!res.ok) {
+      const msg = await res.text();
+      throw new Error(`Resend API error: ${msg}`);
+    }
+
+    console.log(`✅ Booking email sent to ${toEmail}`);
     return true;
   } catch (err) {
     console.error("❌ Error sending booking email:", err.message);
     return false;
   }
 }
-
