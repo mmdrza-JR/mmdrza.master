@@ -148,7 +148,7 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// ============================================================
+
 // 🧩 API Routes
 // ============================================================
 app.use("/api/auth", authRoutes);
