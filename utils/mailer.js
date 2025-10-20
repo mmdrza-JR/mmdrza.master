@@ -1,50 +1,49 @@
 // ============================================================
-// 💌 Mmdrza Ultra Mailer v6 — Resend API (for Railway)
+// 💌 Mmdrza Ultra Mailer v8 — Brevo (Sendinblue) API Version
 // ============================================================
-// - No SMTP, No Timeouts
-// - Works instantly via HTTPS
+// ✅ 100% Compatible with Railway
+// ✅ No SMTP, No Domain Verify Needed
 // ============================================================
 
 import fetch from "node-fetch";
 import dotenv from "dotenv";
 dotenv.config();
 
-const RESEND_API_URL = "https://api.resend.com/emails";
+const BREVO_URL = "https://api.brevo.com/v3/smtp/email";
 
-// ============================================================
 // ✉️ ارسال ایمیل تأیید ثبت‌نام
-// ============================================================
 export async function sendVerificationEmail(toEmail, code) {
   const html = `
   <div style="font-family:Tahoma,sans-serif;direction:rtl;background:#f1f5f9;padding:20px;text-align:center">
     <div style="background:#fff;border-radius:12px;padding:30px;max-width:520px;margin:auto;box-shadow:0 0 25px rgba(0,0,0,0.08)">
       <h2 style="color:#2563eb;">تأیید ایمیل شما</h2>
-      <p style="font-size:15px;color:#475569;">کد تأیید ورود شما:</p>
-      <h1 style="font-size:36px;letter-spacing:5px;color:#1e3a8a;margin:20px 0;">${code}</h1>
-      <p style="font-size:13px;color:#64748b;">این کد تا ۵ دقیقه آینده معتبر است.</p>
-      <hr style="margin:25px 0;border:none;border-top:1px solid #e2e8f0;">
-      <p style="font-size:12px;color:#94a3b8;">سامانه مشاوره تحصیلی هوشمند Mmdrza 🤖</p>
+      <p>کد ورود شما:</p>
+      <h1 style="font-size:32px;color:#1e3a8a;letter-spacing:5px;">${code}</h1>
+      <p>این کد تا ۵ دقیقه آینده معتبر است.</p>
+      <hr/>
+      <p style="font-size:12px;color:#94a3b8;">سامانه مشاوره تحصیلی Mmdrza 🤖</p>
     </div>
   </div>`;
 
   try {
-    const res = await fetch(RESEND_API_URL, {
+    const res = await fetch(BREVO_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-        "Content-Type": "application/json",
+        accept: "application/json",
+        "api-key": process.env.BREVO_API_KEY,
+        "content-type": "application/json",
       },
       body: JSON.stringify({
-        from: "Mmdrza Advisor <onboarding@resend.dev>",
-        to: [toEmail],
+        sender: { email: process.env.BREVO_SENDER.match(/<(.+)>/)[1], name: process.env.BREVO_SENDER.split(" <")[0] },
+        to: [{ email: toEmail }],
         subject: "🔐 کد تأیید ورود شما",
-        html,
+        htmlContent: html,
       }),
     });
 
     if (!res.ok) {
-      const msg = await res.text();
-      throw new Error(`Resend API error: ${msg}`);
+      const errText = await res.text();
+      throw new Error(`Brevo API error: ${errText}`);
     }
 
     console.log(`✅ Verification email sent to ${toEmail}`);
@@ -55,9 +54,7 @@ export async function sendVerificationEmail(toEmail, code) {
   }
 }
 
-// ============================================================
-// 📘 ارسال ایمیل نهایی رزرو مشاوره
-// ============================================================
+// 📘 ارسال ایمیل رزرو مشاوره (اختیاری)
 export async function sendBookingEmail(booking, toEmail) {
   const html = `
   <div style="font-family:Tahoma,sans-serif;direction:rtl;background:#f6f8fb;padding:20px">
@@ -65,36 +62,32 @@ export async function sendBookingEmail(booking, toEmail) {
       <h2 style="color:#2563eb">رزرو جدید مشاوره تحصیلی</h2>
       <p><strong>👤 نام:</strong> ${booking.name}</p>
       <p><strong>📧 ایمیل:</strong> ${booking.email}</p>
-      <p><strong>📞 تلفن:</strong> ${booking.phone || "-"}</p>
-      <p><strong>🎯 هدف تحصیلی:</strong> ${booking.goalText}</p>
+      <p><strong>🎯 هدف:</strong> ${booking.goalText}</p>
       <hr/>
-      <h4 style="color:#2563eb">✨ خلاصهٔ تحلیل AI:</h4>
       <p>${booking.aiSummary}</p>
-      <h4 style="color:#2563eb">🧠 توصیهٔ هوشمند:</h4>
       <p>${booking.aiRecommendation}</p>
-      <hr style="margin:25px 0;border:none;border-top:1px solid #e2e8f0;">
-      <p style="font-size:12px;color:#94a3b8;">سامانه مشاوره تحصیلی هوشمند Mmdrza 🤖</p>
     </div>
   </div>`;
 
   try {
-    const res = await fetch(RESEND_API_URL, {
+    const res = await fetch(BREVO_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-        "Content-Type": "application/json",
+        accept: "application/json",
+        "api-key": process.env.BREVO_API_KEY,
+        "content-type": "application/json",
       },
       body: JSON.stringify({
-        from: "Mmdrza Advisor <onboarding@resend.dev>",
-        to: [toEmail],
+        sender: { email: process.env.BREVO_SENDER.match(/<(.+)>/)[1], name: process.env.BREVO_SENDER.split(" <")[0] },
+        to: [{ email: toEmail }],
         subject: `📘 رزرو جدید از ${booking.name}`,
-        html,
+        htmlContent: html,
       }),
     });
 
     if (!res.ok) {
-      const msg = await res.text();
-      throw new Error(`Resend API error: ${msg}`);
+      const errText = await res.text();
+      throw new Error(`Brevo API error: ${errText}`);
     }
 
     console.log(`✅ Booking email sent to ${toEmail}`);
