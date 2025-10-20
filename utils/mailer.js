@@ -1,38 +1,48 @@
 // ============================================================
-// 💌 Mmdrza Ultra Mailer v9 — Brevo (Sendinblue) API Edition
+// 💌 Mmdrza Ultra Mailer v8 — Gmail App Password Edition (Final)
 // ============================================================
-// ✅ 100% Compatible with Railway
-// ✅ No SMTP ports → works behind firewalls
-// ✅ Safe sender parsing (no match errors)
-// ✅ RTL Persian HTML template optimized
+// ✅ Works perfectly on Railway
+// ✅ Uses Gmail App Password (2FA Enabled)
+// ✅ Includes automatic retry + cleaner logs
+// ✅ Handles Persian text safely
 // ============================================================
 
-import fetch from "node-fetch";
+import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
 
-const BREVO_URL = "https://api.brevo.com/v3/smtp/email";
+// ============================================================
+// ⚙️ ساخت اتصال SMTP به Gmail
+// ============================================================
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || "smtp.gmail.com",
+  port: Number(process.env.SMTP_PORT) || 587,
+  secure: false, // Gmail روی پورت 587 از STARTTLS استفاده می‌کند
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false, // جلوگیری از خطای SSL در Railway
+  },
+});
 
-// 🧠 Helper: Parse sender safely
-function parseSender(senderString) {
-  // Default fallback if not provided in Railway
-  const defaultSender = "Mmdrza Advisor <mohamadrezazedbaz10@gmail.com>";
-  const value = senderString || defaultSender;
-
-  const match = value.match(/<(.+)>/);
-  const email = match ? match[1] : value;
-  const name = value.split(" <")[0] || "Mmdrza Advisor";
-
-  return { email, name };
-}
+// ============================================================
+// 🔍 تست اتصال هنگام راه‌اندازی سرور
+// ============================================================
+transporter.verify((err, success) => {
+  if (err) {
+    console.error("❌ SMTP Connection Failed:", err.message);
+  } else {
+    console.log("✅ Gmail SMTP Ready — Mailer Online!");
+  }
+});
 
 // ============================================================
 // ✉️ ارسال ایمیل تأیید ثبت‌نام
 // ============================================================
 export async function sendVerificationEmail(toEmail, code) {
-  const sender = parseSender(process.env.BREVO_SENDER);
-
-  const htmlContent = `
+  const html = `
   <div style="font-family:Tahoma,sans-serif;direction:rtl;background:#f1f5f9;padding:20px;text-align:center">
     <div style="background:#fff;border-radius:12px;padding:30px;max-width:520px;margin:auto;box-shadow:0 0 25px rgba(0,0,0,0.08)">
       <img src="https://cdn-icons-png.flaticon.com/512/542/542689.png" width="70" alt="Mail" style="margin-bottom:15px">
@@ -41,56 +51,53 @@ export async function sendVerificationEmail(toEmail, code) {
       <h1 style="font-size:36px;letter-spacing:5px;color:#1e3a8a;margin:20px 0;">${code}</h1>
       <p style="font-size:13px;color:#64748b;">این کد تا ۵ دقیقه آینده معتبر است.</p>
       <hr style="margin:25px 0;border:none;border-top:1px solid #e2e8f0;">
-      <p style="font-size:12px;color:#94a3b8;">سامانه مشاوره تحصیلی هوشمند Mmdrza 🤖</p>
+      <p style="font-size:12px;color:#94a3b8;">سامانه مشاوره تحصیلی Mmdrza 🤖</p>
     </div>
   </div>`;
 
+  const mailOptions = {
+    from: process.env.SMTP_FROM || `"Mmdrza Advisor" <${process.env.SMTP_USER}>`,
+    to: toEmail,
+    subject: "🔐 کد تأیید ورود شما",
+    html,
+  };
+
   try {
-    const res = await fetch(BREVO_URL, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "api-key": process.env.BREVO_API_KEY,
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        sender,
-        to: [{ email: toEmail }],
-        subject: "🔐 کد تأیید ورود شما",
-        htmlContent,
-      }),
-    });
-
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(`Brevo API error: ${errText}`);
-    }
-
-    console.log(`✅ Verification email sent to ${toEmail}`);
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`✅ Verification email sent to ${toEmail} (${info.messageId})`);
     return true;
   } catch (err) {
     console.error("❌ Error sending verification email:", err.message);
-    return false;
+    console.log("📡 Retrying in 3 seconds...");
+
+    // تلاش مجدد خودکار (در صورت خطاهای موقتی)
+    await new Promise((r) => setTimeout(r, 3000));
+    try {
+      const retryInfo = await transporter.sendMail(mailOptions);
+      console.log(`✅ Retry success: email sent to ${toEmail} (${retryInfo.messageId})`);
+      return true;
+    } catch (retryErr) {
+      console.error("❌ Retry failed:", retryErr.message);
+      return false;
+    }
   }
 }
 
 // ============================================================
-// 📘 ارسال ایمیل رزرو مشاوره
+// 📘 ارسال ایمیل اطلاع‌رسانی رزرو (اختیاری)
 // ============================================================
 export async function sendBookingEmail(booking, toEmail) {
-  const sender = parseSender(process.env.BREVO_SENDER);
-
-  const htmlContent = `
+  const html = `
   <div style="font-family:Tahoma,sans-serif;direction:rtl;background:#f6f8fb;padding:20px">
-    <div style="background:#fff;border-radius:10px;padding:20px;max-width:600px;margin:auto;box-shadow:0 0 20px rgba(0,0,0,0.08)">
-      <h2 style="color:#2563eb;margin-bottom:10px;">رزرو جدید مشاوره تحصیلی</h2>
+    <div style="background:#fff;border-radius:10px;padding:25px;max-width:600px;margin:auto;box-shadow:0 0 20px rgba(0,0,0,0.08)">
+      <h2 style="color:#2563eb;margin-bottom:15px;">رزرو جدید مشاوره تحصیلی</h2>
       <p><strong>👤 نام:</strong> ${booking.name}</p>
       <p><strong>📧 ایمیل:</strong> ${booking.email}</p>
-      <p><strong>🎯 هدف:</strong> ${booking.goalText}</p>
-      <hr style="margin:15px 0;border:none;border-top:1px solid #e2e8f0;">
-      <h4 style="color:#2563eb">✨ خلاصه تحلیل AI:</h4>
+      <p><strong>🎯 هدف تحصیلی:</strong> ${booking.goalText}</p>
+      <hr style="margin:20px 0;border:none;border-top:1px solid #e2e8f0;">
+      <h4 style="color:#2563eb;">✨ خلاصه تحلیل AI:</h4>
       <p>${booking.aiSummary}</p>
-      <h4 style="color:#2563eb">🧠 توصیه هوشمند:</h4>
+      <h4 style="color:#2563eb;">🧠 توصیه هوشمند:</h4>
       <p>${booking.aiRecommendation}</p>
       <hr style="margin:25px 0;border:none;border-top:1px solid #e2e8f0;">
       <p style="font-size:12px;color:#94a3b8;text-align:center;">سامانه مشاوره تحصیلی Mmdrza 🤖</p>
@@ -98,27 +105,14 @@ export async function sendBookingEmail(booking, toEmail) {
   </div>`;
 
   try {
-    const res = await fetch(BREVO_URL, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "api-key": process.env.BREVO_API_KEY,
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        sender,
-        to: [{ email: toEmail }],
-        subject: `📘 رزرو جدید از ${booking.name}`,
-        htmlContent,
-      }),
+    const info = await transporter.sendMail({
+      from: process.env.SMTP_FROM || `"Mmdrza Advisor" <${process.env.SMTP_USER}>`,
+      to: toEmail,
+      subject: `📘 رزرو جدید از ${booking.name}`,
+      html,
     });
 
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(`Brevo API error: ${errText}`);
-    }
-
-    console.log(`✅ Booking email sent to ${toEmail}`);
+    console.log(`✅ Booking email sent to ${toEmail} (${info.messageId})`);
     return true;
   } catch (err) {
     console.error("❌ Error sending booking email:", err.message);
