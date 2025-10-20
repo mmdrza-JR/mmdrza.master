@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mmdrza Smart Study Advisor</title>
+
+  <!-- فاوآیکون -->
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+
+  <!-- فونت وزیر -->
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+
+  <!-- Bootstrap + Tailwind + Animate -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Typed.js -->
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+
+  <!-- استایل سفارشی -->
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body class="bg-[#0b1120] text-white font-[Vazir] overflow-x-hidden">
+
+  <!-- عنوان صفحه -->
+  <header class="text-center py-5">
+    <h1 class="text-3xl md:text-4xl font-bold text-sky-400 mb-2">
+      <span id="typedText"></span>
+    </h1>
+    <p class="text-gray-300">در سه مرحله مسیر تحصیلی خود را با کمک هوش مصنوعی پیدا کنید 🚀</p>
+  </header>
+
+  <!-- فرم مشاوره -->
+  <main class="container d-flex justify-content-center align-items-center">
+    <div id="advisorForm" class="glass-box w-100 max-w-xl p-5 rounded-4 shadow-lg">
+
+      <!-- Progress Bar -->
+      <div class="progress mb-4" style="height:10px;">
+        <div id="progressBar" class="progress-bar bg-info progress-bar-striped progress-bar-animated" style="width: 33%;"></div>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="form-step" data-step="1">
+        <h4 class="text-sky-300 mb-3 fw-bold">۱. اطلاعات شخصی</h4>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="name" class="form-label">نام و نام خانوادگی</label>
+            <input id="name" type="text" class="form-control bg-transparent text-white border-white/25">
+          </div>
+          <div class="col-md-6">
+            <label for="email" class="form-label">ایمیل</label>
+            <input id="email" type="email" class="form-control bg-transparent text-white border-white/25">
+          </div>
+          <div class="col-md-6">
+            <label for="phone" class="form-label">شماره تماس</label>
+            <input id="phone" type="text" class="form-control bg-transparent text-white border-white/25">
+          </div>
+          <div class="col-md-6">
+            <label for="level" class="form-label">مقطع تحصیلی</label>
+            <select id="level" class="form-select bg-transparent text-white border-white/25">
+              <option value="">انتخاب کنید</option>
+              <option style="color: black;">کارشناسی</option>
+              <option style="color: black;">ارشد</option>
+              <option style="color: black;">دکتری</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="form-step d-none" data-step="2">
+        <h4 class="text-sky-300 mb-3 fw-bold">۲. هدف و رشته مورد نظر</h4>
+        <div class="mb-3">
+          <label for="faculty" class="form-label">رشته / دانشگاه مورد نظر</label>
+          <input id="faculty" type="text" class="form-control bg-transparent text-white border-white/25">
+        </div>
+        <div class="mb-3">
+          <label for="goal" class="form-label">هدف تحصیلی</label>
+          <textarea id="goal" rows="3" class="form-control bg-transparent text-white border-white/25"></textarea>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="form-step d-none" data-step="3">
+        <h4 class="text-sky-300 mb-3 fw-bold">۳. زمان مشاوره و تأیید نهایی</h4>
+        <label for="date" class="form-label">زمان دلخواه</label>
+        <input id="date" type="datetime-local" class="form-control bg-transparent text-white border-white/25 mb-4">
+        <div class="alert alert-info bg-transparent border-info text-white">
+          لطفاً زمان مورد نظر خود را برای جلسه مشاوره انتخاب کنید.
+        </div>
+      </div>
+
+      <!-- کنترل دکمه‌ها -->
+      <div class="d-flex justify-content-between mt-4">
+        <button id="prevBtn" class="btn btn-outline-light px-4 d-none">مرحله قبل</button>
+        <button id="nextBtn" class="btn btn-info text-white px-4">مرحله بعد</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- اسکریپت‌های جدا -->
+  <script src="./js/form.js"></script>
+  <script src="./js/typed-init.js"></script>
+<script src="./js/animation-engine.js"></script>
+</body>
+</html>

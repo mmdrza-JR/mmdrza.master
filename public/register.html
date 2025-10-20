@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ثبت‌نام | Mmdrza Ultra AI Advisor</title>
+
+  <!-- Frameworks -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+
+  <style>
+    body {
+      font-family: 'Vazir', sans-serif;
+      background: radial-gradient(circle at top, #010b17 0%, #020617 35%, #0b172b 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ====== Glass Holographic Box ====== */
+    .glass-box {
+      position: relative;
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 24px;
+      padding: 50px 40px;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      backdrop-filter: blur(22px) saturate(130%);
+      box-shadow:
+        0 0 40px rgba(56,189,248,0.2),
+        0 0 160px rgba(56,189,248,0.08) inset;
+      transition: all .4s ease;
+      width: 92%;
+      max-width: 520px;
+      overflow: hidden;
+    }
+    .glass-box:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow:
+        0 0 50px rgba(56,189,248,0.3),
+        0 0 180px rgba(56,189,248,0.15) inset;
+    }
+
+    /* ====== Moving Glow Halo ====== */
+    .glass-box::before {
+      content: "";
+      position: absolute;
+      inset: -6px;
+      border-radius: 26px;
+      background: linear-gradient(130deg,
+        rgba(56,189,248,0.3),
+        rgba(99,102,241,0.25),
+        rgba(56,189,248,0.3));
+      filter: blur(25px);
+      animation: neonHalo 8s linear infinite;
+      opacity: 0.7;
+      z-index: -1;
+    }
+    @keyframes neonHalo {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* ====== Header Text ====== */
+    h2 {
+      color: #38bdf8;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(56,189,248,0.6);
+    }
+    .typed-title {
+      font-size: 1.2rem;
+      color: #7dd3fc;
+      margin-bottom: 1.6rem;
+      height: 28px;
+    }
+
+    /* ====== Inputs ====== */
+    .form-control {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      border-radius: 12px;
+      padding: 10px 14px;
+      transition: all 0.25s ease;
+    }
+    .form-control:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 20px rgba(56,189,248,0.4);
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* ====== Neon Button ====== */
+    .btn-neon {
+      background: linear-gradient(90deg, #0ea5e9, #22d3ee);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 0.8rem;
+      width: 100%;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      transition: all 0.35s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-neon::before {
+      content: "";
+      position: absolute;
+      top: 0; left: -75%;
+      width: 50%; height: 100%;
+      background: rgba(255,255,255,0.3);
+      transform: skewX(-20deg);
+      transition: left 0.75s ease;
+    }
+    .btn-neon:hover::before {
+      left: 125%;
+    }
+    .btn-neon:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(56,189,248,0.6);
+    }
+
+    /* ====== Status Message ====== */
+    #statusMsg {
+      margin-top: 18px;
+      min-height: 30px;
+      font-weight: 500;
+      text-shadow: 0 0 10px rgba(0,0,0,0.4);
+    }
+
+    footer {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="glass-box animate__animated animate__fadeInUp">
+    <div class="text-center mb-4">
+      <i class="fa-solid fa-brain fa-3x text-info mb-3"></i>
+      <h2>Mmdrza Ultra Advisor</h2>
+      <div class="typed-title"><span id="typedText"></span></div>
+    </div>
+
+    <form id="registerForm" autocomplete="off">
+      <div class="mb-3 text-start">
+        <label class="form-label">نام و نام خانوادگی</label>
+        <input type="text" class="form-control" id="name" required>
+      </div>
+      <div class="mb-3 text-start">
+        <label class="form-label">ایمیل</label>
+        <input type="email" class="form-control" id="email" required>
+      </div>
+      <button type="submit" class="btn btn-neon mt-2">
+        <i class="fa-solid fa-paper-plane me-2"></i> ارسال کد تأیید
+      </button>
+    </form>
+
+    <div id="statusMsg" class="text-center mt-3"></div>
+
+    <footer>© 2025 Mmdrza Ultra AI Advisor — All Rights Reserved</footer>
+  </div>
+
+  <script>
+    // ==== Header Typing Animation ====
+    new Typed("#typedText", {
+      strings: [
+        "به دنیای یادگیری هوشمند خوش آمدید 🤖",
+        "به کمک AI مسیر تحصیلی‌ات را پیدا کن 🚀",
+        "Mmdrza Smart Study Advisor 🌌"
+      ],
+      typeSpeed: 45,
+      backSpeed: 25,
+      loop: true
+    });
+
+    // ==== Register Logic ====
+    const form = document.getElementById("registerForm");
+    const msg = document.getElementById("statusMsg");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      msg.innerHTML = "<div class='text-info animate__animated animate__fadeIn'>در حال ارسال...</div>";
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+
+      if (!name || !email) {
+        msg.innerHTML = "<div class='text-warning animate__animated animate__shakeX'>⚠️ لطفاً همه فیلدها را پر کنید.</div>";
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email }),
+        });
+
+        const data = await res.json();
+        console.log("📩 Register Response →", data);
+
+        if (data.success) {
+          // ✅ ذخیره اطلاعات در localStorage برای verify.html
+          localStorage.setItem("pendingName", name);
+          localStorage.setItem("pendingEmail", email);
+
+          msg.innerHTML = `<div class='text-success fw-bold animate__animated animate__fadeIn'>✅ ${data.message}</div>`;
+
+          // انتقال به verify.html بعد از 1.8 ثانیه
+          setTimeout(() => (window.location.href = "/verify.html"), 1800);
+        } else {
+          msg.innerHTML = `<div class='text-danger animate__animated animate__shakeX'>${data.error}</div>`;
+        }
+      } catch (err) {
+        console.error("❌ Register Error:", err);
+        msg.innerHTML = "<div class='text-danger animate__animated animate__shakeX'>خطا در ارتباط با سرور 🚫</div>";
+      }
+    });
+  </script>
+</body>
+</html>

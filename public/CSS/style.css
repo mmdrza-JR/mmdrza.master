@@ -1,0 +1,215 @@
+body {
+  font-family: "Vazir", sans-serif;
+}
+.glass-box {
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(56,189,248,0.3);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 40px rgba(56,189,248,0.15);
+  transition: all .3s ease;
+}
+.glass-box:hover {
+  box-shadow: 0 0 60px rgba(56,189,248,0.3);
+}
+.form-label {
+  color: #bae6fd;
+  font-weight: 500;
+}
+.form-control, .form-select {
+  border-radius: 0.75rem;
+}
+.form-control:focus, .form-select:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 10px rgba(56,189,248,0.5);
+}
+/* ===== افکت نئون برای دکمه‌ها ===== */
+.btn-info {
+  background: linear-gradient(45deg, #0ea5e9, #38bdf8);
+  border: none;
+  box-shadow: 0 0 15px rgba(56,189,248,0.6);
+  transition: all .3s ease;
+}
+.btn-info:hover {
+  box-shadow: 0 0 25px rgba(56,189,248,0.9);
+  transform: scale(1.05);
+}
+
+/* ===== افکت‌های fade و slide برای مراحل ===== */
+.form-step {
+  animation-duration: 0.7s;
+}
+.fadeInRight {
+  animation-name: fadeInRight;
+}
+.fadeOutLeft {
+  animation-name: fadeOutLeft;
+}
+@keyframes fadeInRight {
+  from {opacity:0; transform:translateX(50px);}
+  to {opacity:1; transform:translateX(0);}
+}
+@keyframes fadeOutLeft {
+  from {opacity:1; transform:translateX(0);}
+  to {opacity:0; transform:translateX(-50px);}
+}
+
+/* ===== Spinner ارسال نهایی ===== */
+#loadingSpinner {
+  display: none;
+  margin-top: 1rem;
+  text-align: center;
+}
+#loadingSpinner .spinner-border {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: #38bdf8;
+}
+#aiResultBox {
+  border: 1px solid rgba(56,189,248,0.4);
+  box-shadow: 0 0 25px rgba(56,189,248,0.25);
+  transition: all .4s ease;
+}
+#aiResultBox:hover {
+  box-shadow: 0 0 45px rgba(56,189,248,0.5);
+}
+.form-step {
+  transition: opacity .4s ease, transform .4s ease;
+}
+.animate__fadeInUp {
+  animation-duration: 0.6s;
+}
+.animate__fadeOutDown {
+  animation-duration: 0.5s;
+}
+/* ====== SUPER NEON GLOW (AI Blue) ====== */
+
+/* общий container glow */
+.glow-outline {
+  position: relative;
+  z-index: 1;
+}
+.glow-outline::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 1rem;
+  background: linear-gradient(90deg, rgba(56,189,248,0.25), rgba(99,102,241,0.18));
+  filter: blur(18px);
+  z-index: -1;
+  opacity: 0.9;
+}
+
+/* progress bar glow + animated gradient */
+.progress {
+  background: rgba(255,255,255,0.03);
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: inset 0 -4px 20px rgba(0,0,0,0.6);
+}
+.progress .progress-bar {
+  background: linear-gradient(90deg, #0ea5e9, #38bdf8, #60a5fa);
+  box-shadow: 0 0 18px rgba(56,189,248,0.45);
+  transition: width 600ms cubic-bezier(.2,.9,.3,1);
+  will-change: width;
+  background-size: 200% 100%;
+  animation: progShift 6s linear infinite;
+}
+@keyframes progShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* neon button */
+.btn-neon {
+  background: linear-gradient(90deg, rgba(14,165,233,1), rgba(59,130,246,1));
+  border: none;
+  padding: .6rem 1.2rem;
+  border-radius: .9rem;
+  box-shadow: 0 6px 30px rgba(14,165,233,0.18), 0 2px 12px rgba(14,165,233,0.12) inset;
+  transition: transform .18s ease, box-shadow .18s ease;
+  position: relative;
+  overflow: hidden;
+}
+.btn-neon:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 10px 40px rgba(14,165,233,0.28); }
+.btn-neon:active { transform: translateY(-1px) scale(.995); }
+
+/* button ripple */
+.btn-neon::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 10% 10%, rgba(255,255,255,0.06), transparent 10%);
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+.btn-neon:focus::after { opacity: .12; }
+
+/* spinner pulse */
+.spinner-border.text-info {
+  box-shadow: 0 0 20px rgba(56,189,248,0.75);
+  border-width: 0.22rem;
+  animation: spinPulse 1s linear infinite;
+}
+@keyframes spinPulse {
+  0% { transform: rotate(0deg) scale(1); filter: drop-shadow(0 0 6px rgba(56,189,248,0.35)); }
+  50% { transform: rotate(180deg) scale(1.06); filter: drop-shadow(0 0 18px rgba(56,189,248,0.5)); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+/* AI result card glow */
+#aiResultBox {
+  border-radius: 1rem;
+  border: 1px solid rgba(56,189,248,0.12);
+  background: linear-gradient(180deg, rgba(7,20,40,0.45), rgba(3,8,22,0.55));
+  box-shadow: 0 8px 40px rgba(24,58,130,0.14), 0 0 40px rgba(56,189,248,0.06) inset;
+  backdrop-filter: blur(10px) saturate(120%);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+#aiResultBox:hover { transform: translateY(-6px); box-shadow: 0 14px 60px rgba(14,165,233,0.22); }
+
+/* little micro-animations for labels and inputs */
+.form-control, .form-select {
+  border-radius: .8rem;
+  transition: box-shadow .18s ease, border-color .18s ease, transform .18s ease;
+}
+.form-control:focus, .form-select:focus {
+  box-shadow: 0 6px 30px rgba(14,165,233,0.12);
+  border-color: rgba(14,165,233,0.9);
+  transform: translateY(-2px);
+}
+
+/* subtle floating for the whole form to look holographic */
+#advisorForm {
+  transform: translateZ(0);
+  transition: transform .4s ease;
+}
+#advisorForm:hover { transform: translateY(-6px) translateZ(12px); }
+
+/* responsive small tweaks */
+@media (max-width: 575px) {
+  .btn-neon { padding: .5rem 0.9rem; font-size: .92rem; }
+  #advisorForm { padding: 1rem; }
+}
+/* افکت درخشش Progress Bar */
+.glow-outline {
+  box-shadow: 0 0 25px rgba(0, 200, 255, 0.8);
+  filter: drop-shadow(0 0 10px rgba(0, 200, 255, 0.7));
+}
+
+/* دکمه نئون */
+.btn-neon {
+  box-shadow: 0 0 20px rgba(0, 200, 255, 0.7);
+  background: linear-gradient(90deg, rgba(0,180,255,0.4), rgba(0,255,255,0.1));
+  border-color: rgba(0,200,255,0.6);
+  transition: all 0.25s ease-in-out;
+}
+.btn-neon:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 35px rgba(0, 240, 255, 0.9);
+}
+input[readonly] {
+  background-color: rgba(255,255,255,0.05) !important;
+  cursor: not-allowed;
+  color: #94a3b8 !important;
+}

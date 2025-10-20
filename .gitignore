@@ -1,0 +1,12 @@
+# dependencies
+node_modules/
+
+# env files
+.env
+
+# build outputs (اختیاری)
+dist/
+build/
+
+# misc
+.DS_Store
