@@ -141,12 +141,12 @@ cookie: {
 // 📂 Static Frontend
 // ============================================================
 app.use("/node_modules", express.static(path.join(__dirname, "node_modules")));
-app.use(express.static(path.join(__dirname, "public")));
-
-// Default Route (landing page)
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "register.html"));
 });
+
+app.use(express.static(path.join(__dirname, "public")));
+
 
 
 
