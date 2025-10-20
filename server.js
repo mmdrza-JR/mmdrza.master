@@ -145,8 +145,9 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Default Route (landing page)
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "public", "register.html"));
 });
+
 
 
 // 🧩 API Routes
@@ -155,6 +156,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/booking", bookingRoutes);
 app.use("/api/ai", aiRoutes);
 // === Frontend Pages Routing ===
+app.get("/verify", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "verify.html"));
+});
 
 app.get("/register", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "register.html"));
