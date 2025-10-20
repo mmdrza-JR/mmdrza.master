@@ -4,27 +4,36 @@
 // - Supports Verification + Booking Emails
 // ============================================================
 
+// ============================================================
+// 📧 Mmdrza Mailer — Safe for Railway (Mailtrap compatible)
+// ============================================================
+
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
 
-// ✅ ساخت اتصال SMTP ایمن
+// ============================================================
+// 🧠 SMTP Connection (Mailtrap)
+// ============================================================
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
+  host: process.env.SMTP_HOST || "sandbox.smtp.mailtrap.io",
   port: Number(process.env.SMTP_PORT) || 587,
-  secure: process.env.SMTP_SECURE === "true", // اگر 465 باشه باید true بشه
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
+  secure: false, // ⚠️ همیشه false روی Mailtrap و Railway
+  tls: {
+    rejectUnauthorized: false, // جلوگیری از خطای self-signed cert
+  },
 });
 
-// 🧠 تست اتصال SMTP در شروع سرور
+// 🧩 تست اتصال SMTP در شروع
 transporter.verify((err, success) => {
   if (err) {
     console.error("❌ SMTP Connection Failed:", err.message);
   } else {
-    console.log("✅ SMTP Server Ready — Mailer online!");
+    console.log("✅ SMTP Server Ready — Mailer Online!");
   }
 });
 
@@ -47,7 +56,7 @@ export async function sendVerificationEmail(toEmail, code) {
 
   try {
     const info = await transporter.sendMail({
-      from: `"Mmdrza Advisor" <${process.env.SMTP_USER}>`,
+      from: process.env.SMTP_FROM || `"Mmdrza Advisor" <${process.env.SMTP_USER}>`,
       to: toEmail,
       subject: "🔐 کد تأیید ورود شما",
       html: htmlContent,
@@ -57,7 +66,7 @@ export async function sendVerificationEmail(toEmail, code) {
     return true;
   } catch (err) {
     console.error("❌ Error sending verification email:", err.message);
-    throw err;
+    return false;
   }
 }
 
@@ -85,7 +94,7 @@ export async function sendBookingEmail(booking, toEmail) {
 
   try {
     const info = await transporter.sendMail({
-      from: `"Mmdrza Advisor" <${process.env.SMTP_USER}>`,
+      from: process.env.SMTP_FROM || `"Mmdrza Advisor" <${process.env.SMTP_USER}>`,
       to: toEmail,
       subject: `📘 رزرو جدید از ${booking.name}`,
       html: htmlContent,
@@ -95,6 +104,7 @@ export async function sendBookingEmail(booking, toEmail) {
     return true;
   } catch (err) {
     console.error("❌ Error sending booking email:", err.message);
-    throw err;
+    return false;
   }
 }
+
